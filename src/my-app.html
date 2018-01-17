@@ -27,6 +27,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="lazy-import" href="my-view3.html">
 <link rel="lazy-import" href="my-view404.html">
 
+<!-- NEW IMPORTS -->
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
+
+<link rel="import" href="../elements/elements-import.html">
+
+
 <dom-module id="my-app">
   <template>
     <style>
@@ -34,7 +46,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
 
-        display: block;
+        display: block;      
+          /* responsive drawer. IMP: to work properly it must be included in :host; */
+        --app-drawer-width:37%;
+
       }
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -49,22 +64,190 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
+      
+        .drawer-list {
+          margin: 0 20px;
+        }
 
-      .drawer-list {
-        margin: 0 20px;
+        .drawer-list a {
+          display: block;
+          padding: 0 16px;
+          text-decoration: none;
+          color: var(--app-secondary-color);
+          line-height: 40px;
+        }
+
+        .drawer-list a.iron-selected {
+          color: black;
+          font-weight: bold;
+        }
+   
+
+      /* Added styles */
+
+      /* Login styles */
+
+      .account-icon{
+        --iron-icon-width:35px;     
+        --iron-icon-height:35px; 
       }
 
-      .drawer-list a {
-        display: block;
-        padding: 0 16px;
+      .account-image{
+        background-color:var(--app-primary-color);
+        border-radius: 50%;
+        --iron-image-width:35px;
+        --iron-image-height:35px;
+      }
+
+      .account-drop{
+        width: 22rem;
+        -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); 
+      }
+
+      .account-drop__content{
+        overflow-x: hidden;    
+        display: grid;
+        grid-template-columns: 5rem 1fr;
+        grid-template-rows: 2fr 1fr;
+        font-size: 1rem;
+        padding: 0;
+        background-color: white; 
+          
+      }
+
+      .account-drop__photo{
+        padding:10px;
+        border-radius: 50%;
+        margin-right: 5px;
+        width: 65px;
+        height: 65px;
+       
+      }
+
+      .account-drop__actions{
+        grid-column: 1/3;
+        background: #eceff1;
         text-decoration: none;
-        color: var(--app-secondary-color);
-        line-height: 40px;
+        border-top: 1px solid #b0bec5;       
+        border-radius:0px 0px 5px 5px;
+        @apply(--layout-horizontal);         
+        @apply(--layout-around-justified);
       }
 
-      .drawer-list a.iron-selected {
-        color: black;
+      .account-drop__actions a{
+        text-decoration: none;
+      }
+
+      .account-drop__actions paper-button{
+        color:black;
+      }
+
+      .account-drop__profile{
+        grid-column: 2/3;
+        padding:10px;
+        color:black;
+        @apply(--layout-vertical);         
+        @apply(--layout-around-justified);
+        
+      }
+
+      .login-dialog{
+        width: 30rem;
+        max-width: 320px;
+        border-radius:10px;
+        height: auto;
+        display: grid;
+        grid-template-rows: 5rem 1fr;
+        
+      }
+
+      .login-dialog__header{
+        margin: 0;
+        padding: 1.5rem;
+        border-radius:10px 10px 0px 0px;
+        background: var(--accent-color);
+        color:white;
+        @apply(--layout-horizontal);         
+        @apply(--layout-around-justified);
+      }
+
+      paper-toast.positiveToast{
+        --paper-toast-background-color: #4caf50;
+        --paper-toast-color: #ffffff;
         font-weight: bold;
+        text-align: center;
+      }
+
+       paper-toast.negativeToast{
+        --paper-toast-background-color: #78909c;
+        --paper-toast-color: #ffffff;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .header-menu, .drawer__login-grid{
+          display: none;
+        }
+
+
+      .account-icon, .account-image, .drawer-list, .header__main-title{
+        display: block;
+      } 
+
+      app-toolbar.header__toolbar{
+          height: 55px;
+      }
+
+    /* set hidden to display:none to optimize hidden$ atribute rendering */;
+      [hidden]{
+        display: none;
+      }
+         
+      /* Media query . Here include styles for bigger screens (mobile first) */
+      @media (min-width: 640px){
+
+        .header-menu{
+          display: block;
+        }
+
+        .account-icon, .account-image, .drawer-list, .header__main-title{
+          display: none;
+        }
+
+         /* height added to paper-tabs header menu height */
+        app-toolbar.header__toolbar{
+          height: 5px;
+        }
+
+        .drawer__login-grid{
+          display: grid;
+          grid-template-columns: 1fr minmax(11em,15em) 1fr;
+          grid-template-rows: 10em minmax(16em,16em) 1fr;
+        }
+
+        .drawer__login-admin{
+          grid-column: 2/3;
+          grid-row: 2/3;
+        } 
+
+        .drawer__avatar-icon{
+          --iron-icon-width:80px;     
+          --iron-icon-height:80px;    
+        }
+
+        .drawer__avatar-container{
+          @apply(--layout-horizontal);
+          @apply(--layout-center-justified);
+          @apply(--layout-center); 
+          grid-column: 2/3;
+          grid-row: 1/2;
+        }
+        
+        /* set hidden to display:none to optimize hidden$ atribute rendering */;
+        [hidden]{
+          display: none;
+        }
+
       }
     </style>
 
@@ -79,26 +262,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}">
     </app-route>
-
-    <app-drawer-layout fullbleed narrow="{{narrow}}">
+     <!-- set 'fullbleed' to ocuppy total body space. Important -->
+    <app-drawer-layout fullbleed>
       <!-- Drawer content -->
-      <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-        <app-toolbar>Menu</app-toolbar>
+      <app-drawer id="drawer" slot="drawer">
+        <app-toolbar>
+          <div main-title spacer>Gomivia</div>
+        </app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="view1" href="[[rootPath]]view1">View One</a>
           <a name="view2" href="[[rootPath]]view2">View Two</a>
           <a name="view3" href="[[rootPath]]view3">View Three</a>
         </iron-selector>
+        <!-- Drawer login system -->
+        <div class="drawer__login-grid">
+          <div class="drawer__avatar-container">
+           <iron-icon icon="my-icons:account-circle" class="drawer__avatar-icon"></iron-icon> 
+          </div>        
+            <login-admin class="drawer__login-admin"></login-admin>
+          </div>
+        </div>
       </app-drawer>
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
 
         <app-header slot="header" condenses reveals effects="waterfall">
-          <app-toolbar>
+
+          <app-toolbar class="header__toolbar">
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
+            <div main-title spacer class="header__main-title">Gomivia</div>
+
+            <iron-icon on-tap="dialogLogin" icon="my-icons:account-circle" hidden$="{{signed}}" class="account-icon"></iron-icon> 
+            <iron-image loaded="{{loaded}}" hidden$="{{!signed}}" on-tap="dropAccount" src="[[userProfile.photoURL]]" class="account-image"></iron-image>
           </app-toolbar>
+
+          <!-- Header menu -->
+          <paper-tabs class="header-menu" selected="{{page}}" attr-for-selected="name">
+            <paper-tab name="view1">First tab</paper-tab>
+            <paper-tab name="view2">Tab two</paper-tab>
+            <paper-tab name="view3">Tab three</paper-tab>
+          </paper-tabs>
+
+          <!-- Account Dropdown  -->             
+          <iron-dropdown id="profileDrop" class="account-drop" horizontal-align="right" vertical-align="top" vertical-offset="68" horizontal-offset="5">
+            <div slot="dropdown-content">
+                <div class="account-drop__content">
+                  <img class="account-drop__photo" hidden$="{{!signed}}" src$="[[userProfile.photoURL]]">
+                  <div class="account-drop__profile">
+                    [[userProfile.nombre]] </br>
+                    [[user.email]]
+                  </div>
+                  <div class="account-drop__actions" id="actions">
+                    <a href="view3"><paper-button>Account</paper-button></a>
+                    <paper-button on-tap="logout">Log out</paper-button>
+                  </div>
+                </div>      
+            </div>
+          </iron-dropdown> 
+
         </app-header>
 
         <iron-pages
@@ -113,6 +335,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
+
+    <!-- Login dialog -->
+    <paper-dialog modal id="dialogAuthentic" class="login-dialog">  
+      <h2 class="login-dialog__header">
+        <span>Welcome</span> 
+        <iron-icon icon="my-icons:close" on-tap="dialogClose"></iron-icon> 
+      </h2>
+      <div class="login-dialog__admin">
+        <login-admin></login-admin>
+      </div> 
+     </paper-dialog>
+
+     <!--toast -->
+    <paper-toast id="positiveToast" class="positiveToast" duration="4000"></paper-toast>
+    <paper-toast id="negativeToast" class="negativeToast" duration="4000"></paper-toast>
+
+     <!--Initialize Firebase -->
+    <firebase-app 
+        auth-domain="weeding-app-8af05.firebaseapp.com"
+        database-url="https://weeding-app-8af05.firebaseio.com"
+        api-key="AIzaSyA9FjGrIYQzNLk8qCSYFvrA7u4FfUU_uG8"
+        name="wedding-app"
+        project-id="weeding-app-8af05"
+        storage-bucket="weeding-app-8af05.appspot.com"
+        messaging-sender-id="338583580606"
+        app="{{fbapp}}">
+    </firebase-app>
+
+    <firebase-auth 
+        app-name="wedding-app"
+        id="auth" 
+        user="{{user}}" 
+        signed-in="{{signed}}"
+        status-known="{{statusKnown}}"
+        app="{{fbapp}}">
+    </firebase-auth>
+
+    <firebase-document               
+        app-name="wedding-app"
+        path="/users/{{user.uid}}" 
+        data="{{userProfile}}">
+    </firebase-document>
+
   </template>
 
   <script>
@@ -131,6 +396,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
           rootPath: String,
+
+          // Added properties:
+           /**
+          * Object that brings access to firebase services 
+          * @type {Object}
+          */ 
+          fbapp:Object,
         };
       }
 
@@ -164,6 +436,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _showPage404() {
         this.page = 'view404';
       }
+      // Added methods
+      ready(){
+        super.ready();
+        this.addEventListener('positiveToast', e => this._openPositiveToast(e));
+        this.addEventListener('negativeToast', e => this._openNegativeToast(e));
+        this.addEventListener('closeLogin', e => this.dialogClose(e));
+        this.addEventListener('delete-user', e => this.removeUser(e)); // <delete-account>  
+      }
+
+       /**
+          * we need to include Toast in <my-app> component in order to show it correctly
+          * @param {e} receive text to be included in the toast
+          */
+      _openPositiveToast(e){
+            this.$.positiveToast.open();
+            this.$.positiveToast.text = e.detail
+        }
+
+      _openNegativeToast(e){
+            this.$.negativeToast.open();
+            this.$.negativeToast.text = e.detail
+        }
+      /**
+          * open dialog with login / signup system
+          */
+
+      dialogLogin(){
+        this.$.dialogAuthentic.toggle()
+      }
+
+      dialogClose(){     
+        this.$.dialogAuthentic.close()
+      }
+      /**
+          * open header drowpdown with account options
+          */
+      dropAccount(){
+       
+        this.$.profileDrop.open()
+      }
+
+      closeDrope(){
+        this.$.profileDrop.close()
+      }
+
+      /**
+          * Firebase logout system
+          */
+      logout(){
+        if (!this.user){
+                alert('you are not logged in')
+                    return false;
+                  }
+
+        this.$.auth.signOut().catch(function(error){
+          console.log(error.code, error.message)
+        }).then(function(){
+            this.closeDrope();
+            this.dispatchEvent(new CustomEvent('positiveToast',{bubbles:true, composed:true, detail:'C u soon!'}))
+         // this.fire('positive-toast','Sessão encerrada')
+        }.bind(this))
+      }
+
+
     }
 
     window.customElements.define(MyApp.is, MyApp);
